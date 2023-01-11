@@ -41,9 +41,9 @@ const getVariableDescription = (variable: string) => {
   `;
 };
 
-const getVariableReference = (variable: string) => {
+const getVariableReference = (variable: string = '') => {
   // TODO
-  return `[Primer reference](https://primer.style/primitives/spacing)`;
+  return `[Primer reference](https://primer.style/primitives/spacing#:~:text=${variable.replaceAll('-', '%2D')})`;
 };
 
 const stripFallback = (variable: string) => {
@@ -82,12 +82,12 @@ const propertiesMap: { [key: string]: any } = {
   'padding-left': { ...filterScale(functionalSizeSpaceVariables, 'padding'), ...baseSizeSpaceVariables },
   'padding-inline-start': { ...filterScale(functionalSizeSpaceVariables, 'padding'), ...baseSizeSpaceVariables },
   'padding-inline-end': { ...filterScale(functionalSizeSpaceVariables, 'padding'), ...baseSizeSpaceVariables },
-  width: sizeSpaceVariables,
-  'max-width': sizeSpaceVariables,
-  'min-width': sizeSpaceVariables,
-  height: sizeSpaceVariables,
-  'max-height': sizeSpaceVariables,
-  'min-height': sizeSpaceVariables
+  width: { ...filterScale(functionalSizeSpaceVariables, 'size'), ...baseSizeSpaceVariables },
+  'max-width': { ...filterScale(functionalSizeSpaceVariables, 'size'), ...baseSizeSpaceVariables },
+  'min-width': { ...filterScale(functionalSizeSpaceVariables, 'size'), ...baseSizeSpaceVariables },
+  height: { ...filterScale(functionalSizeSpaceVariables, 'size'), ...baseSizeSpaceVariables },
+  'max-height': { ...filterScale(functionalSizeSpaceVariables, 'size'), ...baseSizeSpaceVariables },
+  'min-height': { ...filterScale(functionalSizeSpaceVariables, 'size'), ...baseSizeSpaceVariables }
 };
 
 const getVariablesScale = (cssProperty: string) => propertiesMap[cssProperty];
@@ -102,12 +102,15 @@ const completionItemProvider: vscode.CompletionItemProvider = {
 
     return Object.keys(scaleVariables).map((variable) => {
       const description = scaleVariables[variable];
+
       return {
         label: { label: variable, description },
-        sortText: '.',
         kind: vscode.CompletionItemKind.Variable,
+        // sorting hack with spaces
+        sortText: '.' + (variable.includes('base') ? ' ' + description : '  ' + description),
         insertText: ` var(--${variable})`,
-        detail: description
+        // comes on read more
+        detail: `${variable}\n\n${description}`
       };
     });
   }
@@ -189,7 +192,7 @@ const getDiagnosticSuggestions = (lineText: string) => {
 
       suggestions.push({
         original: cssVariable,
-        message: `${randomEmoji()} You're using ${cssVariable}, prefer using functional primitive instead. \nExample: ${
+        message: `${randomEmoji()} You're using a base primitive, prefer using a functional primitive with the same value instead. \nExample: ${
           functionalVariables[0]
         }`,
         replacements: functionalVariables.map((variable) => ({
@@ -218,7 +221,7 @@ const getDiagnosticSuggestions = (lineText: string) => {
       if (functionalVariables.length > 0) {
         suggestions.push({
           original: cssVariable,
-          message: `${randomEmoji()} Using ${cssVariable}, which is not recommended for ${cssProperty}, prefer using ${cssProperty} primitives. Example: ${
+          message: `${randomEmoji()} You're using ${cssVariable}, which is not recommended for ${cssProperty}, prefer using ${cssProperty} primitives. Example: ${
             functionalVariables[0]
           }`,
           replacements: functionalVariables.map((variable) => ({
@@ -282,7 +285,7 @@ const getDiagnosticSuggestions = (lineText: string) => {
 
         suggestions.push({
           original: cssValue,
-          message: `${randomEmoji()} You're using a custom value not on the scale, prefer using a primitive from the scale instead. \n\nIf this value is intentional, please supress this warning (see quick fix)`,
+          message: `${randomEmoji()} You're using a custom value not on the scale, prefer using a nearby primitive on the scale instead. \n\nIf this value is intentional, please supress this warning (see quick fix)`,
           replacements: [
             {
               // ignore comment
