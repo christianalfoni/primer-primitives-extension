@@ -4,7 +4,7 @@
   <b>VSCode extension for primer/primtives</b>
   <br><br>
   <img src="https://img.shields.io/badge/maturity-proof--of--concept-d85151?style=flat-square"/>
-  <img src="https://img.shields.io/badge/npm-not--published-d85151?style=flat-square"/>
+  <img src="https://img.shields.io/badge/marketplace-not--published-d85151?style=flat-square"/>
 </p>
 
 &nbsp;
