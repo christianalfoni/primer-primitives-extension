@@ -1,0 +1,14 @@
+.CommentBox-toolbar {
+  display: flex;
+  min-width: 0;
+  flex-shrink: 1;
+  flex-grow: 1;
+
+  gap: var(--base-size-4);
+  margin-bottom: var(--base-size-64);
+
+  padding: var(--primer-stack-gap-normal);
+
+  margin-top: 16px;
+  margin-right: 2px;
+}
